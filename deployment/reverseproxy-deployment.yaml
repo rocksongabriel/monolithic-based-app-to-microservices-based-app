@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: udagram-reverseproxy
+  labels: 
+  app: udagram-reverseproxy
+spec:
+  replicas: 2
+  selector: 
+    matchLabels:
+      app: udagram-reverseproxy
+  template:
+    metadata:
+      labels: 
+        app: udagram-reverseproxy
+    spec:
+      containers:
+      - name: udagram-reverseproxy
+        image: gabrielrockson/reverseproxy:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        envFrom:
+          - secretRef:
+            name: aws-credentials
+        env:
+        - name: URL
+          valueFrom: 
+            configMapKeyRef:
+              name: env-configmap
+              key: URL
+        - name: AWS_BUCKET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: env-configmap
+              key: AWS_BUCKET_NAME
+        - name: AWS_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: env-configmap
+              key: AWS_BUCKET
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: env-configmap
+              key: AWS_REGION
+        - name: AWS_PROFILE
+          valueFrom: 
+            configMapKeyRef:
+              name: env-configmap
